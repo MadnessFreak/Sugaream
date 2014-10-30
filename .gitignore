@@ -1,0 +1,9 @@
+# Sugaream Git Ignore
+logs/*.txt
+
+# Windows
+# thumbnails
+Thumbs.db
+
+# Sublime Text 2
+*.sublime-*
