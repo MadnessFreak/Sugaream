@@ -1,6 +1,7 @@
 <?php
 namespace framework\system;
 use framework\system\exception\SystemException;
+use framework\system\request\RequestHandler;
 
 // try to set a time-limit to infinite
 @set_time_limit(0);
@@ -106,9 +107,9 @@ class System
 		require_once(SYS_DIR.'system/request/RequestAction.php');
 		require_once(SYS_DIR.'system/request/RequestHandler.php');
 		require_once(SYS_DIR.'system/twig/Autoloader.php');
-		require_once(SYS_DIR.'system/util/FileUtil.php');
-		require_once(SYS_DIR.'system/util/JSON.php');
-		require_once(SYS_DIR.'system/util/StringUtil.php');
+		require_once(SYS_DIR.'util/FileUtil.php');
+		require_once(SYS_DIR.'util/JSON.php');
+		require_once(SYS_DIR.'util/StringUtil.php');
 	}
 
 	/**
