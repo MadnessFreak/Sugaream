@@ -163,6 +163,9 @@ class System
 		$request = new RequestHandler();
 		$request->handle();
 
+		// content
+		$content = array();
+
 		// render content
 		$template = self::$tplObj->loadTemplate('index.tpl');
 		echo $template->render($content);
