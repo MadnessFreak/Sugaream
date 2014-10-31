@@ -106,6 +106,9 @@ class System
 		require_once(SYS_DIR.'system/request/RequestAction.php');
 		require_once(SYS_DIR.'system/request/RequestHandler.php');
 		require_once(SYS_DIR.'system/twig/Autoloader.php');
+		require_once(SYS_DIR.'system/util/FileUtil.php');
+		require_once(SYS_DIR.'system/util/JSON.php');
+		require_once(SYS_DIR.'system/util/StringUtil.php');
 	}
 
 	/**
