@@ -1,5 +1,6 @@
 <?php
 namespace framework\system;
+use framework\system\exception\SystemException;
 
 // try to set a time-limit to infinite
 @set_time_limit(0);
@@ -99,8 +100,11 @@ class System
 	 * Includes the required util or exception classes manually.
 	 */
 	public static final function preload() {
-		require_once(SYS_DIR.'system/request/RequestAction.class.php');
-		require_once(SYS_DIR.'system/request/RequestHandler.class.php');
+		require_once(SYS_DIR.'system/exception/IPrintableException.php');
+		require_once(SYS_DIR.'system/exception/LoggedException.php');
+		require_once(SYS_DIR.'system/exception/SystemException.php');
+		require_once(SYS_DIR.'system/request/RequestAction.php');
+		require_once(SYS_DIR.'system/request/RequestHandler.php');
 		require_once(SYS_DIR.'system/twig/Autoloader.php');
 	}
 
