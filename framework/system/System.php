@@ -7,7 +7,7 @@ use framework\system\request\RequestHandler;
 @set_time_limit(0);
 
 // define current wcf version
-define('FRAMEWORK_VERSION', '0.111.214 Alpha');
+define('FRAMEWORK_VERSION', '0.11.0414 Alpha');
 
 // define current unix timestamp
 define('TIME_NOW', time());
@@ -165,6 +165,10 @@ class System
 
 		// content
 		$content = array();
+		$content['PAGE_TITLE'] = PAGE_TITLE;
+		$content['GET'] = $_GET;
+		$content['POST'] = $_POST;
+		$content['SERVER'] = $_SERVER;
 
 		// render content
 		$template = self::$tplObj->loadTemplate('index.tpl');

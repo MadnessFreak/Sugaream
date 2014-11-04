@@ -1,6 +1,7 @@
 <?php
 namespace framework\system\request;
 use framework\system\exception\SystemException;
+use framework\system\System;
 
 /**
  * Handles http requests.
@@ -30,6 +31,12 @@ class RequestHandler {
 	 * @var	boolean
 	 */
 	protected static $secure = null;
+
+	/**
+	 * Requested uri
+	 * @var	string
+	 */
+	protected static $uri = '';
 
 	/**
 	 * requested page
@@ -84,17 +91,36 @@ class RequestHandler {
 	 * @param	string		$application
 	 */
 	protected function buildRequest() {
-		// set default request variables
-		self::$requestPage = strtolower(!empty($_GET['page']) ? $_GET['page'] : 'index');
-		self::$requestAction = strtolower(!empty($_GET['action']) ? $_GET['action'] : '');
-		self::$requestType = strtolower(!empty($_GET['type']) ? $_GET['type'] : '');
-		self::$requestValue = strtolower(!empty($_GET['value']) ? $_GET['value'] : 0);
+		// set default request variables 
+		if (count($_GET) <= 1) {
+			self::$uri = explode('/', $_SERVER['REQUEST_URI']);
 
-		// validates
+			self::$requestPage = strtolower(!empty(self::$uri[1]) ? self::$uri[1] : 'index');
+			self::$requestAction = strtolower(!empty(self::$uri[2]) ? self::$uri[2] : '');
+			self::$requestType = strtolower(!empty($_GET['type']) ? $_GET['type'] : '');
+			self::$requestValue = strtolower(!empty(self::$uri[3]) ? self::$uri[3] : 0);
+
+			// check for optional 'type' param
+			$temp = explode('?', self::$requestValue)[0];
+			if (count($temp) > 0) self::$requestValue = explode('=', $temp)[0];
+		} else {
+			self::$requestPage = strtolower(!empty($_GET['page']) ? $_GET['page'] : 'index');
+			self::$requestAction = strtolower(!empty($_GET['action']) ? $_GET['action'] : '');
+			self::$requestType = strtolower(!empty($_GET['type']) ? $_GET['type'] : '');
+			self::$requestValue = strtolower(!empty($_GET['value']) ? $_GET['value'] : 0);
+		}		
+
+		// validate variables
 		self::validateQuery(self::$requestPage);
 		self::validateQuery(self::$requestAction);
 		self::validateQuery(self::$requestType);
 		self::validateQuery(self::$requestValue);
+
+		// assign to tpl
+		System::getTPL()->addGlobal('REQUEST_PAGE', self::$requestPage);
+		System::getTPL()->addGlobal('REQUEST_ACTION', self::$requestAction);
+		System::getTPL()->addGlobal('REQUEST_TYPE', self::$requestType);
+		System::getTPL()->addGlobal('REQUEST_VALUE', self::$requestValue);
 	}
 
 	/* ************************************************ */
