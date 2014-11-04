@@ -65,18 +65,18 @@ class System
 	/* *************************************************************************** */
 
 	/**
-	 * Calls all init functions of the WCF class.
+	 * Calls all init functions of framework.
 	 */
 	public function __construct() {		
 		// preload
 		$this->preload();
 
 		// start initialization
-		//$this->initDB();
 		$this->loadOptions();
 		//$this->initSession();
 		//$this->initLanguage();
 		$this->initTPL();
+		//$this->initDB();
 
 		// handle request
 		$this->handle();
