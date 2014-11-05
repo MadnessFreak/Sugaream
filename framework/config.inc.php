@@ -3,5 +3,5 @@ $dbHost = 'localhost';
 $dbPort = 3306;
 $dbUser = 'root';
 $dbPassword = '';
-$dbName = 'framework';
+$dbName = 'sugaream';
 $dbClass = 'framework\system\database\Database';
