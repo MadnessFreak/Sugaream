@@ -13,9 +13,14 @@
 
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+        <!-- Bootstrap -->
+        <link href="/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body>
         {% include 'browsehappy.tpl' %}
+
+        {% include 'header.tpl' %}
 
         <div class="container">
         	{% if REQUEST_PAGE == 'index' %}
