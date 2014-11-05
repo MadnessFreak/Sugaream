@@ -25,5 +25,32 @@ class RequestAction {
 		if (REQUIRE_SECURE_CONNECTION && !$handler::secureConnection()) {
 			throw new SystemException("Connection is not secure");
 		}
+
+		// do what to do
+		$template = System::getTPL();
+		$database = System::getDB();
+		$page = $handler->getPage();
+		$action = $handler->getAction();
+		$value = $handler->getValue();
+		$type = $handler->getType();
+
+		switch ($page) {
+			case 'members':
+				if ($action == 'profile') {
+					$temp = $database->queryFetch("SELECT * FROM sug_user WHERE username = '$value'");
+					$template->addGlobal('member', count($temp) < 1 ? false : $temp[0]);
+				} else {
+					$template->addGlobal('members', $database->queryFetch("SELECT * FROM sug_user"));
+				}
+				break;
+			case 'groups':
+				$template->addGlobal('members', $database->queryFetch("SELECT * FROM sug_group"));
+				break;
+			default:
+				# code...
+				break;
+		}
+
+		$template->addGlobal('members', $database->queryFetch("SELECT * FROM sug_navigation ORDER BY showOrder ASC"));
 	}
 }

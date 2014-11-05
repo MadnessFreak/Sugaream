@@ -98,7 +98,7 @@ class RequestHandler {
 			self::$requestPage = strtolower(!empty(self::$uri[1]) ? self::$uri[1] : 'index');
 			self::$requestAction = strtolower(!empty(self::$uri[2]) ? self::$uri[2] : '');
 			self::$requestType = strtolower(!empty($_GET['type']) ? $_GET['type'] : '');
-			self::$requestValue = strtolower(!empty(self::$uri[3]) ? self::$uri[3] : 0);
+			self::$requestValue = !empty(self::$uri[3]) ? self::$uri[3] : 0;
 
 			// check for optional 'type' param
 			$temp = explode('?', self::$requestValue)[0];
@@ -107,7 +107,7 @@ class RequestHandler {
 			self::$requestPage = strtolower(!empty($_GET['page']) ? $_GET['page'] : 'index');
 			self::$requestAction = strtolower(!empty($_GET['action']) ? $_GET['action'] : '');
 			self::$requestType = strtolower(!empty($_GET['type']) ? $_GET['type'] : '');
-			self::$requestValue = strtolower(!empty($_GET['value']) ? $_GET['value'] : 0);
+			self::$requestValue = !empty($_GET['value']) ? $_GET['value'] : 0;
 		}		
 
 		// validate variables
