@@ -2,3 +2,8 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule .* index.php
 RewriteRule ^test$ /test.php
+
+<IfModule mod_speling.c>
+    CheckCaseOnly off
+    CheckSpelling off
+</IfModule>
