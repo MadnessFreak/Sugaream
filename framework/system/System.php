@@ -1,5 +1,6 @@
 <?php
 namespace framework\system;
+use framework\system\database\Database;
 use framework\system\exception\SystemException;
 use framework\system\request\RequestHandler;
 
@@ -76,7 +77,7 @@ class System
 		//$this->initSession();
 		//$this->initLanguage();
 		$this->initTPL();
-		//$this->initDB();
+		$this->initDB();
 
 		// handle request
 		$this->handle();
@@ -101,9 +102,11 @@ class System
 	 * Includes the required util or exception classes manually.
 	 */
 	public static final function preload() {
+		require_once(SYS_DIR.'system/database/Database.php');
 		require_once(SYS_DIR.'system/exception/IPrintableException.php');
 		require_once(SYS_DIR.'system/exception/LoggedException.php');
 		require_once(SYS_DIR.'system/exception/SystemException.php');
+		require_once(SYS_DIR.'system/database/DatabaseException.php');
 		require_once(SYS_DIR.'system/request/RequestAction.php');
 		require_once(SYS_DIR.'system/request/RequestHandler.php');
 		require_once(SYS_DIR.'system/twig/Autoloader.php');
@@ -166,9 +169,14 @@ class System
 		// content
 		$content = array();
 		$content['PAGE_TITLE'] = PAGE_TITLE;
+		$content['FRAMEWORK_VERSION'] = FRAMEWORK_VERSION;
 		$content['GET'] = $_GET;
 		$content['POST'] = $_POST;
 		$content['SERVER'] = $_SERVER;
+
+		$content['navigation'] = System::getDB()->queryFetch("SELECT * FROM sug_navigation ORDER BY showOrder ASC");
+		$content['members'] = System::getDB()->queryFetch("SELECT * FROM sug_user");
+		$content['groups'] = System::getDB()->queryFetch("SELECT * FROM sug_group");
 
 		// render content
 		$template = self::$tplObj->loadTemplate('index.tpl');
