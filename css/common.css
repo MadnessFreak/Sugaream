@@ -1,0 +1,115 @@
+/* 
+ * Memberlist
+ */
+
+#memberList {
+	
+}
+
+#memberList tbody > tr > td > img {
+	background-color: #EDEDED;
+	display: inline-block;
+	-webkit-box-sizing: initial;
+	-moz-box-sizing: initial;
+	-ms-box-sizing: initial
+	box-sizing: initial;
+}
+
+#memberList tbody > tr > td > img.online {
+	border-left: 4px solid #00a300;
+}
+
+#memberList tbody > tr > td > img.offline {
+	border-left: 4px solid #A3A3A3;
+}
+
+#memberList tbody > tr > td > img.sm {
+	width: 50px;
+	height: 50px;
+}
+
+/* 
+ * Memberlist
+ */
+
+.air-bottom-right {
+bottom: 0;
+right: 0;
+}
+
+
+
+.profile-pic {
+text-align: right;
+}
+.profile-pic>img {
+border-radius: 0;
+position: relative;
+border: 5px solid #fff;
+top: -30px;
+left: 10px;
+display: inline-block;
+text-align: right;
+z-index: 4;
+max-width: 100px;
+margin-bottom: -30px;
+}
+.padding-10 {
+padding: 10px !important;
+}
+.font-md {
+font-size: 130%!important;
+}
+h4 {
+line-height: normal;
+}
+h1 {
+letter-spacing: -1px;
+font-size: 24px;
+margin: 10px 0;
+}
+.semi-bold {
+font-weight: 400!important;
+}
+h1 small {
+font-size: 18px;
+font-weight: 300;
+letter-spacing: -1px;
+}
+.friends-list li {
+margin-bottom: 10px;
+margin-right: 3px;
+padding: 0;
+}
+.friends-list img {
+width: 35px;
+border: 1px solid #fff;
+outline: 1px solid #bfbfbf;
+}
+
+.well {
+	border-radius: 0px !important;
+}
+
+.txt-color-darken {
+	color: #333;
+}
+
+#head .action {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	margin: 0 30px 15px 0;
+}
+#head .cover {
+	background-color: #E8E8E8;
+	min-height: 200px;
+	max-height: 200px;
+	overflow: hidden;
+	width: 100%;
+}
+#head .cover > img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
