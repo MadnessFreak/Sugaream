@@ -45,22 +45,24 @@ class RequestAction {
 						$temp[0]['groups'] = $database->queryFetch("SELECT u.groupID, g.groupName, g.priority FROM sug_user_to_group u INNER JOIN sug_group g ON (u.groupID = g.groupID) WHERE u.userID = ".$temp[0]['userID']." ORDER BY g.priority DESC");
 						$temp[0]['group'] = $temp[0]['groups'][0];
 						$template->addGlobal('member', $temp[0]);
-						
-						//print_r($temp[0]);
-						//exit();
 					}
 				} else {
-					$template->addGlobal('members', $database->queryFetch("SELECT * FROM sug_user"));
+					//$template->addGlobal('members', $database->queryFetch("SELECT us.*, u.*, g.* FROM sug_user us INNER JOIN sug_user_to_group u ON (us.userID = u.userID) INNER JOIN sug_group g ON (u.groupID = g.groupID) ORDER BY g.priority DESC"));
+					$temp = $database->queryFetch("SELECT * FROM sug_user");
+					for ($i = 0; $i < count($temp); $i++) { 
+						$temp[$i]['group'] = $database->queryFetch("SELECT u.groupID, g.* FROM sug_user_to_group u INNER JOIN sug_group g ON (u.groupID = g.groupID) WHERE u.userID = ".$temp[$i]['userID']." ORDER BY g.priority DESC")[0];
+					}
+					$template->addGlobal('members', $temp);
 				}
 				break;
 			case 'groups':
-				$template->addGlobal('members', $database->queryFetch("SELECT * FROM sug_group"));
+				$template->addGlobal('groups', $database->queryFetch("SELECT * FROM sug_group"));
 				break;
 			default:
 				# code...
 				break;
 		}
 
-		$template->addGlobal('members', $database->queryFetch("SELECT * FROM sug_navigation ORDER BY showOrder ASC"));
+		$template->addGlobal('navigation', $database->queryFetch("SELECT * FROM sug_navigation ORDER BY showOrder ASC"));
 	}
 }

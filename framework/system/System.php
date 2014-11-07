@@ -174,10 +174,6 @@ class System
 		$content['POST'] = $_POST;
 		$content['SERVER'] = $_SERVER;
 
-		$content['navigation'] = System::getDB()->queryFetch("SELECT * FROM sug_navigation ORDER BY showOrder ASC");
-		$content['members'] = System::getDB()->queryFetch("SELECT * FROM sug_user");
-		$content['groups'] = System::getDB()->queryFetch("SELECT * FROM sug_group");
-
 		// render content
 		$template = self::$tplObj->loadTemplate('index.tpl');
 		echo $template->render($content);
