@@ -38,7 +38,17 @@ class RequestAction {
 			case 'members':
 				if ($action == 'profile') {
 					$temp = $database->queryFetch("SELECT * FROM sug_user WHERE username = '$value'");
-					$template->addGlobal('member', count($temp) < 1 ? false : $temp[0]);
+					
+					if (count($temp) < 1) {
+						$template->addGlobal('member', false);
+					} else {
+						$temp[0]['groups'] = $database->queryFetch("SELECT u.groupID, g.groupName, g.priority FROM sug_user_to_group u INNER JOIN sug_group g ON (u.groupID = g.groupID) WHERE u.userID = ".$temp[0]['userID']." ORDER BY g.priority DESC");
+						$temp[0]['group'] = $temp[0]['groups'][0];
+						$template->addGlobal('member', $temp[0]);
+						
+						//print_r($temp[0]);
+						//exit();
+					}
 				} else {
 					$template->addGlobal('members', $database->queryFetch("SELECT * FROM sug_user"));
 				}
