@@ -1,19 +1,10 @@
 <?php
-namespace framework\system\database;
-use framework\system\database\DatabaseException;
-use framework\system\System;
 
 /**
- * Abstract implementation of a database access class.
- * 
- * @author	Marcel Werk
- * @copyright	2001-2014 WoltLab GmbH
- * @license	GNU Lesser General Public License <http://opensource.org/licenses/lgpl-license.php>
- * @package	com.woltlab.wcf
- * @subpackage	system.database
- * @category	Community Framework
- */
-class Database {
+* Provides access to a database.
+*/
+class Database
+{
 	/**
 	 * sql server hostname
 	 * @var	string
@@ -43,24 +34,12 @@ class Database {
 	 * @var	string
 	 */
 	protected $database = '';
-	
-	/**
-	 * enables failsafe connection
-	 * @var	boolean
-	 */
-	protected $failsafeTest = false;
-	
+
 	/**
 	 * number of executed queries
 	 * @var	integer
 	 */
 	protected $queryCount = 0;
-
-	/**
-	 * connection object
-	 * @var	object
-	 */
-	protected $connection = null;
 
 	/**
 	 * pdo object
@@ -77,13 +56,12 @@ class Database {
 	 * @param	string		$database		SQL database server database name
 	 * @param	integer		$port			SQL database server port
 	 */
-	public function __construct($host, $user, $password, $database, $port, $failsafeTest = false) {
+	public function __construct($host, $user, $password, $database, $port) {
 		$this->host = $host;
 		$this->port = $port;
 		$this->user = $user;
 		$this->password = $password;
 		$this->database = $database;
-		$this->failsafeTest = $failsafeTest;
 		
 		// connect database
 		$this->connect();
@@ -96,24 +74,15 @@ class Database {
 		if (!$this->port) $this->port = 3306; // mysql default port
 		
 		try {
-			$this->connection = mysql_connect($this->host, $this->user, $this->password);
-
-			if (!$this->connection) {
-				throw new DatabaseException("Connecting to MySQL server '".$this->host."' failed:\n".$e->getMessage(), $this);
-			}
-
-			mysql_select_db($this->database, $this->connection);
-
 			$driverOptions = array(
 				\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'"
 			);
-			if (!$this->failsafeTest) {
-				$driverOptions = array(
-					\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8', SESSION sql_mode = 'ANSI,ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES'"
-				);
-			}
+			
+			// disable prepared statement emulation since MySQL 5.1.17 is the minimum required version
+			$driverOptions[\PDO::ATTR_EMULATE_PREPARES] = false;
 			
 			$this->pdo = new \PDO('mysql:host='.$this->host.';port='.$this->port.';dbname='.$this->database, $this->user, $this->password, $driverOptions);
+			$this->setAttributes();
 		}
 		catch (\PDOException $e) {
 			throw new DatabaseException("Connecting to MySQL server '".$this->host."' failed:\n".$e->getMessage(), $this);
@@ -121,22 +90,12 @@ class Database {
 	}
 
 	/**
-	 * Gets the current database type.
+	 * Returns true if this database type is supported.
 	 * 
-	 * @return	string
+	 * @return	boolean
 	 */
-	public function getDBType() {
-		return get_class($this);
-	}
-
-	/**
-	 * Escapes a string for use in sql query.
-	 * 
-	 * @param	string		$string
-	 * @return	string
-	 */
-	public function escapeString($string) {
-		return addslashes($string);
+	public static function isSupported() {
+		return (extension_loaded('PDO') && extension_loaded('pdo_mysql'));
 	}
 
 	/**
@@ -163,6 +122,41 @@ class Database {
 	}
 
 	/**
+	 * Returns ID from last insert.
+	 * 
+	 * @param	string		$table
+	 * @param	string		$field
+	 * @return	integer
+	 */
+	public function getInsertID($table, $field) {
+		try {
+			return $this->pdo->lastInsertId();
+		}
+		catch (\PDOException $e) {
+			throw new DatabaseException("Cannot fetch last insert id", $this);
+		}
+	}
+
+	/**
+	 * Gets the current database type.
+	 * 
+	 * @return	string
+	 */
+	public function getDBType() {
+		return get_class($this);
+	}
+	
+	/**
+	 * Escapes a string for use in sql query.
+	 * 
+	 * @param	string		$string
+	 * @return	string
+	 */
+	public function escapeString($string) {
+		return addslashes($string);
+	}
+	
+	/**
 	 * Gets the sql version.
 	 * 
 	 * @return	string
@@ -177,7 +171,7 @@ class Database {
 		
 		return 'unknown';
 	}
-
+	
 	/**
 	 * Gets the database name.
 	 * 
@@ -190,7 +184,7 @@ class Database {
 	/**
 	 * Returns the name of the database user.
 	 * 
-	 * @param	string		user name
+	 * @return	string		user name
 	 */
 	public function getUser() {
 		return $this->user;
@@ -213,38 +207,56 @@ class Database {
 	}
 
 	/**
-	 * Returns true if this database type is supported.
-	 * 
-	 * @return	boolean
+	 * Sets default connection attributes.
 	 */
-	public static function isSupported() {
-		return false;
+	protected function setAttributes() {
+		$this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+		$this->pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_NATURAL);
+		$this->pdo->setAttribute(\PDO::ATTR_STRINGIFY_FETCHES, false);
+		$this->pdo->setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
 	}
 
-	public function query($sql)
-	{
-		$result = mysql_query($sql, $this->connection);
-
-		if (!$result) {
-			throw new DatabaseException(mysql_error(), $this);
-		}
+	/**
+	 * Prepares a statement for execution and returns a statement object.
+	 * 
+	 * @param	string			$statement
+	 * @param	integer			$limit
+	 * @param	integer			$offset
+	 * @return	\wcf\system\database\statement\PreparedStatement
+	 */
+	public function prepareStatement($statement, $limit = 0, $offset = 0) {
+		$statement = $this->handleLimitParameter($statement, $limit, $offset);
 		
-		return $result;
+		try {
+			$pdoStatement = $this->pdo->prepare($statement);
+			if ($pdoStatement instanceof \PDOStatement) {
+				return new PreparedStatement($this, $pdoStatement, $statement);
+			}
+			throw new DatabaseException("Cannot prepare statement: ".$statement, $this);
+		}
+		catch (\PDOException $e) {
+			throw new DatabaseException("Cannot prepare statement: ".$statement, $this);
+		}
 	}
 
-	public function queryFetch($sql)
-	{
-		$result = mysql_query($sql, $this->connection);
-		$array = array();
-
-		if (!$result) {
-			throw new DatabaseException(mysql_error(), $this);
-		}
-
-		while ($row = mysql_fetch_array($result)) {
-			array_push($array, $row);
+	/**
+	 * Handles the limit and offset parameter in SELECT queries.
+	 * This is a default implementation compatible to MySQL and PostgreSQL.
+	 * Other database implementations should override this function. 
+	 * 
+	 * @param	string		$query
+	 * @param	integer		$limit
+	 * @param	integer		$offset
+	 * @return	string
+	 */
+	public function handleLimitParameter($query, $limit = 0, $offset = 0) {
+		if ($limit != 0) {
+			if ($offset > 0) $query .= " LIMIT " . $offset . ", " . $limit;
+			else $query .= " LIMIT " . $limit;
 		}
 		
-		return $array;
+		return $query;
 	}
 }
+
+?>

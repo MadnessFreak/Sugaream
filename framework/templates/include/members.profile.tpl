@@ -19,7 +19,7 @@
 				<div class="col-sm-12">
 					<div class="row">
 						<div class="col-sm-3 profile-pic">
-							<img src="/images/avatar/sunny-big.png">
+							<img src="/images/avatar/default-big.png">
 							<div class="padding-10">
 								<h4 class="font-md"><strong>1,543</strong><br><small>Followers</small></h4>
 								<h4 class="font-md"><strong>419</strong><br><small>Connections</small></h4>
@@ -58,17 +58,17 @@
 						<div class="col-sm-3">
 							<h1><small>Friends</small></h1>
 							<ul class="list-inline friends-list">
-								<li><img src="/images/avatar/1.png" alt="friend-1">
+								<li><img src="/images/avatar/default.png" alt="friend-1">
 								</li>
-								<li><img src="/images/avatar/2.png" alt="friend-2">
+								<li><img src="/images/avatar/default.png" alt="friend-2">
 								</li>
-								<li><img src="/images/avatar/3.png" alt="friend-3">
+								<li><img src="/images/avatar/default.png" alt="friend-3">
 								</li>
-								<li><img src="/images/avatar/4.png" alt="friend-4">
+								<li><img src="/images/avatar/default.png" alt="friend-4">
 								</li>
-								<li><img src="/images/avatar/5.png" alt="friend-5">
+								<li><img src="/images/avatar/default.png" alt="friend-5">
 								</li>
-								<li><img src="/images/avatar/male.png" alt="friend-6">
+								<li><img src="/images/avatar/default.png" alt="friend-6">
 								</li>
 								<li>
 									<a href="javascript:void(0);">413 more</a>
@@ -77,11 +77,11 @@
 
 							<h1><small>Recent visitors</small></h1>
 							<ul class="list-inline friends-list">
-								<li><img src="/images/avatar/male.png" alt="friend-1">
+								<li><img src="/images/avatar/default.png" alt="friend-1">
 								</li>
-								<li><img src="/images/avatar/female.png" alt="friend-2">
+								<li><img src="/images/avatar/default.png" alt="friend-2">
 								</li>
-								<li><img src="/images/avatar/female.png" alt="friend-3">
+								<li><img src="/images/avatar/default.png" alt="friend-3">
 								</li>
 							</ul>
 						</div> <!-- col-sm-3 -->

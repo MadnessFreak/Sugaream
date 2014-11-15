@@ -1,7 +1,4 @@
 <?php
-namespace framework\system\database;
-use framework\system\exception\SystemException;
-use framework\util\StringUtil;
 
 /**
  * DatabaseException is a specific SystemException for database errors.
@@ -71,7 +68,7 @@ class DatabaseException extends SystemException {
 			$this->errorNumber = $this->db->getErrorNumber();
 			$this->errorDesc = $this->db->getErrorDesc();
 		}
-
+		
 		parent::__construct($message, intval($this->errorNumber));
 	}
 	
@@ -124,16 +121,16 @@ class DatabaseException extends SystemException {
 	 * Prints the error page.
 	 */
 	public function show() {
-		$this->information .= '<b>sql type:</b> ' . StringUtil::encodeHTML($this->getDBType()) . '<br />';
-		$this->information .= '<b>sql error:</b> ' . StringUtil::encodeHTML($this->getErrorDesc()) . '<br />';
-		$this->information .= '<b>sql error number:</b> ' . StringUtil::encodeHTML($this->getErrorNumber()) . '<br />';
-		$this->information .= '<b>sql version:</b> ' . StringUtil::encodeHTML($this->getSQLVersion()) . '<br />';
+		$this->information .= '<b>sql type:</b> ' . Utility::encodeHTML($this->getDBType()) . '<br />';
+		$this->information .= '<b>sql error:</b> ' . Utility::encodeHTML($this->getErrorDesc()) . '<br />';
+		$this->information .= '<b>sql error number:</b> ' . Utility::encodeHTML($this->getErrorNumber()) . '<br />';
+		$this->information .= '<b>sql version:</b> ' . Utility::encodeHTML($this->getSQLVersion()) . '<br />';
 		if ($this->preparedStatement !== null) {
-			$this->information .= '<b>sql query:</b> ' . StringUtil::encodeHTML($this->preparedStatement->getSQLQuery()) . '<br />';
+			$this->information .= '<b>sql query:</b> ' . Utility::encodeHTML($this->preparedStatement->getSQLQuery()) . '<br />';
 			$parameters = $this->preparedStatement->getSQLParameters();
 			if (!empty($parameters)) {
 				foreach ($parameters as $index => $parameter) {
-					$this->information .= '<b>sql query parameter ' . $index . ':</b>' . StringUtil::encodeHTML($parameter) . '<br />';
+					$this->information .= '<b>sql query parameter ' . $index . ':</b>' . Utility::encodeHTML($parameter) . '<br />';
 				}
 			}
 		}

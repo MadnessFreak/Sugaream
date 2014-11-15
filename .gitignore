@@ -1,6 +1,3 @@
-# Sugaream Git Ignore
-logs/*.txt
-
 # Windows
 # thumbnails
 Thumbs.db

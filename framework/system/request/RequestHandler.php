@@ -1,21 +1,8 @@
 <?php
-namespace framework\system\request;
-use framework\system\exception\SystemException;
-use framework\system\System;
 
-/**
- * Handles http requests.
- * 
- * @author	Marcel Werk
- * @copyright	2001-2014 WoltLab GmbH
- * @license	GNU Lesser General Public License <http://opensource.org/licenses/lgpl-license.php>
- * @package	com.woltlab.wcf
- * @subpackage	system.request
- * @category	Community Framework
- */
 class RequestHandler {
 	/**
-	 * current host and protocol
+	 * Current host and protocol
 	 * @var	string
 	 */
 	protected static $host = '';
@@ -31,37 +18,31 @@ class RequestHandler {
 	 * @var	boolean
 	 */
 	protected static $secure = null;
-
 	/**
 	 * Requested uri
 	 * @var	string
 	 */
 	protected static $uri = '';
-
 	/**
 	 * requested page
 	 * @var	string
 	 */
 	protected static $requestPage = '';
-
 	/**
 	 * requested action
 	 * @var	string
 	 */
 	protected static $requestAction = '';
-
-	/**
-	 * requested type
-	 * @var	string
-	 */
-	protected static $requestType = '';
-
 	/**
 	 * requested value
 	 * @var	mixed
 	 */
 	protected static $requestValue = 0;
-
+	/**
+	 * requested params
+	 * @var	array
+	 */
+	protected static $requestParams = array();
 	/**
 	 * action handler
 	 * @var	object
@@ -73,16 +54,10 @@ class RequestHandler {
 	/**
 	 * Handles a http request.
 	 * 
-	 * @param	string		$application
-	 * @param	boolean		$isACPRequest
 	 */
 	public function handle() {
 		// build request
 		$this->buildRequest();
-
-		// start request
-		self::$actionHandler = new RequestAction();
-		self::$actionHandler->execute($this);
 	}
 
 	/**
@@ -91,36 +66,52 @@ class RequestHandler {
 	 * @param	string		$application
 	 */
 	protected function buildRequest() {
-		// set default request variables 
-		if (count($_GET) <= 1) {
+		// set default request variables
+		if (isset($_SERVER['HTTP_MOD_REWRITE']) && $_SERVER['HTTP_MOD_REWRITE'] == 'On') {
 			self::$uri = explode('/', $_SERVER['REQUEST_URI']);
-
 			self::$requestPage = strtolower(!empty(self::$uri[1]) ? self::$uri[1] : 'index');
 			self::$requestAction = strtolower(!empty(self::$uri[2]) ? self::$uri[2] : '');
-			self::$requestType = strtolower(!empty($_GET['type']) ? $_GET['type'] : '');
 			self::$requestValue = !empty(self::$uri[3]) ? self::$uri[3] : 0;
 
-			// check for optional 'type' param
-			$temp = explode('?', self::$requestValue)[0];
-			if (count($temp) > 0) self::$requestValue = explode('=', $temp)[0];
+			// set param data
+			$paramdata = explode('?', self::$requestValue);
+
+			// check for optional params
+			if ((count($paramdata) - 1) > 0) {
+				self::$requestValue = $paramdata[0];
+				$query = $paramdata[1];
+				$temp = explode('&', $query);
+				$count = count($temp);
+
+				for ($i=0; $i < $count; $i++) { 
+					// create param
+					$param = explode('=', $temp[$i]);
+					self::$requestParams[$param[0]] = $param[1];
+
+					// validate param
+					self::validateQuery(self::$requestParams[$param[0]]);
+				}
+			}
 		} else {
 			self::$requestPage = strtolower(!empty($_GET['page']) ? $_GET['page'] : 'index');
 			self::$requestAction = strtolower(!empty($_GET['action']) ? $_GET['action'] : '');
-			self::$requestType = strtolower(!empty($_GET['type']) ? $_GET['type'] : '');
 			self::$requestValue = !empty($_GET['value']) ? $_GET['value'] : 0;
-		}		
+		}
 
 		// validate variables
 		self::validateQuery(self::$requestPage);
 		self::validateQuery(self::$requestAction);
-		self::validateQuery(self::$requestType);
 		self::validateQuery(self::$requestValue);
 
-		// assign to tpl
-		System::getTPL()->addGlobal('REQUEST_PAGE', self::$requestPage);
-		System::getTPL()->addGlobal('REQUEST_ACTION', self::$requestAction);
-		System::getTPL()->addGlobal('REQUEST_TYPE', self::$requestType);
-		System::getTPL()->addGlobal('REQUEST_VALUE', self::$requestValue);
+		// assign request params
+		System::getTPL()->assign('REQUEST_PAGE', self::$requestPage);
+		System::getTPL()->assign('REQUEST_ACTION', self::$requestAction);
+		System::getTPL()->assign('REQUEST_TYPE', self::$requestValue);
+		System::getTPL()->assign('REQUEST_PARAMS', self::$requestParams);
+
+		// invoke controller
+		RequestInvoker::invoke('Basic');
+		RequestInvoker::invoke(self::$requestPage);
 	}
 
 	/* ************************************************ */
@@ -131,7 +122,6 @@ class RequestHandler {
 	public static function validateQuery($query) {
 		if (empty($query))
 			return;
-
 		// validate query
 		if (!preg_match('~^[a-z0-9_]+$~i', $query)) {
 			throw new SystemException("Illegal request query '".$query."'");
@@ -197,15 +187,6 @@ class RequestHandler {
 	 */
 	public static function getAction() {		
 		return self::$requestAction;
-	}
-
-	/**
-	 * Returns the requested type.
-	 * 
-	 * @return	string
-	 */
-	public static function getType() {		
-		return self::$requestType;
 	}
 
 	/**
