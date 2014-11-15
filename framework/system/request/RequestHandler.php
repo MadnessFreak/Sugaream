@@ -197,4 +197,22 @@ class RequestHandler {
 	public static function getValue() {		
 		return self::$requestValue;
 	}
+
+	/**
+	 * Returns the request method.
+	 * 
+	 * @return	string
+	 */
+	public static function getRequestMethod() {
+		return (!empty($_SERVER['REQUEST_METHOD']) ? substr($_SERVER['REQUEST_METHOD'], 0, 7) : '');
+	}
+
+	/**
+	 * Returns the request uri.
+	 * 
+	 * @return	string
+	 */
+	public static function getRequestURI() {
+		return (!empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '');
+	}
 }
